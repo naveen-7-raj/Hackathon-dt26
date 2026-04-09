@@ -3,25 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FairLens AI – Bias Detection & Fairness Platform</title>
-  <meta name="description" content="FairLens AI detects, explains, and mitigates algorithmic bias in AI decision systems. Making AI transparent, fair, and accountable." />
+  <title>FairLens AI – Bias Detection & Fairness Optimization Platform</title>
+  <meta name="description" content="FairLens AI detects, explains, and mitigates algorithmic bias in AI decision systems. Making AI decisions transparent, fair, and accountable." />
   <link rel="stylesheet" href="/static/style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
-<!-- Loading overlay -->
-<div id="loading-overlay" class="hidden">
-  <div class="spinner"></div>
-  <div class="loading-text">FairLens AI is Initializing</div>
-  <div class="loading-step" id="loading-step">Preparing pipeline…</div>
+<!-- Particle canvas -->
+<canvas id="particles"></canvas>
+
+<!-- ── Loading Overlay ──────────────────────────────────────── -->
+<div id="loading-overlay">
+  <div class="loader-ring">
+    <div class="load-icon">⚖️</div>
+  </div>
+  <div class="load-title">FairLens AI is Loading</div>
+  <div class="load-step" id="loading-step">Starting up — this takes ~60–90 s on first run…</div>
+  <div class="load-bar-wrap"><div class="load-bar" id="load-bar" style="width:5%"></div></div>
 </div>
 
-<!-- Navigation -->
+<!-- ── Navigation ──────────────────────────────────────────── -->
 <nav>
   <div class="nav-logo">
-    <span class="logo-icon">⚖️</span>
-    FairLens AI
+    <span class="logo-icon">⚖️</span>FairLens AI
   </div>
   <div class="nav-tabs">
     <button class="nav-tab active" data-section="section-home">Home</button>
@@ -29,364 +34,402 @@
     <button class="nav-tab" data-section="section-bias">Bias Metrics</button>
     <button class="nav-tab" data-section="section-shap">Explainability</button>
     <button class="nav-tab" data-section="section-comparison">Before/After</button>
-    <button class="nav-tab" data-section="section-whatif">What-If</button>
+    <button class="nav-tab" data-section="section-whatif">⚡ What-If</button>
   </div>
-  <div id="status-badge" class="nav-badge">⚙ Not Initialized</div>
+  <div class="status-pill">
+    <div class="status-dot" id="status-dot"></div>
+    <span id="status-text">Not Initialized</span>
+  </div>
 </nav>
 
 <div class="container">
 
-  <!-- ═══════════════════════════════════════
-       HOME / LANDING
-  ═══════════════════════════════════════ -->
-  <section id="section-home" class="section active">
-    <div class="hero">
-      <h1>Making AI Decisions<br>Transparent, Fair &amp; Accountable</h1>
-      <p>FairLens AI detects hidden bias in machine learning models, explains every decision with SHAP, and mitigates unfairness — all powered by a 100,000-record synthetic dataset.</p>
-      <div class="hero-actions">
-        <button class="btn btn-primary" id="btn-init">
-          🚀 Initialize System
-        </button>
-        <button class="btn btn-secondary" onclick="document.querySelector('[data-section=section-whatif]').click()">
-          🎛 What-If Simulator
-        </button>
-      </div>
+<!-- ══════════════════════════════════════════════════════
+     HOME
+══════════════════════════════════════════════════════ -->
+<section id="section-home" class="section active">
+  <div class="hero">
+    <div class="hero-eyebrow">✦ AI Fairness &amp; Transparency Platform</div>
+    <h1>Making AI Decisions<br>Transparent, Fair &amp; Accountable</h1>
+    <p class="hero-sub">
+      FairLens AI reveals hidden bias inside machine learning models, explains every single prediction with SHAP, 
+      and applies fairness-aware mitigation — powered by a national-scale 100,000-record synthetic dataset.
+    </p>
+    <div class="hero-cta">
+      <button class="btn btn-primary" id="btn-init">⚙️ Auto-Initializing…</button>
+      <button class="btn btn-glass" onclick="gotoTab('section-whatif')">🎛 Try What-If Simulator</button>
     </div>
+  </div>
 
-    <!-- Feature cards -->
-    <div class="grid grid-3" style="margin-top:2rem">
-      <div class="card glow-border" style="--accent: linear-gradient(90deg, #8b5cf6, #3b82f6)">
-        <div style="font-size:2rem; margin-bottom:0.75rem">📊</div>
-        <h3 style="font-size:1.05rem; font-weight:700; margin-bottom:0.5rem">Bias Detection</h3>
-        <p style="font-size:0.85rem; color:var(--text-secondary); line-height:1.6">
-          Computes Demographic Parity Difference, Equal Opportunity Difference, and Disparate Impact Ratio across gender and regional groups.
-        </p>
-      </div>
-      <div class="card" style="border-color:rgba(6,182,212,0.2)">
-        <div style="font-size:2rem; margin-bottom:0.75rem">🔬</div>
-        <h3 style="font-size:1.05rem; font-weight:700; margin-bottom:0.5rem">Explainable AI (SHAP)</h3>
-        <p style="font-size:0.85rem; color:var(--text-secondary); line-height:1.6">
-          SHAP LinearExplainer provides global feature importance and per-prediction local explanations showing exactly why each decision was made.
-        </p>
-      </div>
-      <div class="card" style="border-color:rgba(16,185,129,0.2)">
-        <div style="font-size:2rem; margin-bottom:0.75rem">⚖️</div>
-        <h3 style="font-size:1.05rem; font-weight:700; margin-bottom:0.5rem">Bias Mitigation</h3>
-        <p style="font-size:0.85rem; color:var(--text-secondary); line-height:1.6">
-          Fairness-aware reweighting adjusts class importance at training time, equalizing approval rates across demographic groups.
-        </p>
-      </div>
-      <div class="card" style="border-color:rgba(245,158,11,0.2)">
-        <div style="font-size:2rem; margin-bottom:0.75rem">🎛</div>
-        <h3 style="font-size:1.05rem; font-weight:700; margin-bottom:0.5rem">What-If Simulator</h3>
-        <p style="font-size:0.85rem; color:var(--text-secondary); line-height:1.6">
-          Adjust income, age, education, gender and region in real-time and instantly see whether bias influences the loan decision.
-        </p>
-      </div>
-      <div class="card" style="border-color:rgba(244,114,182,0.2)">
-        <div style="font-size:2rem; margin-bottom:0.75rem">🗃</div>
-        <h3 style="font-size:1.05rem; font-weight:700; margin-bottom:0.5rem">100k Synthetic Records</h3>
-        <p style="font-size:0.85rem; color:var(--text-secondary); line-height:1.6">
-          National-scale simulated dataset with intentional bias encoded for rural and low-income applicants — mirrors real-world patterns.
-        </p>
-      </div>
-      <div class="card" style="border-color:rgba(139,92,246,0.2)">
-        <div style="font-size:2rem; margin-bottom:0.75rem">📈</div>
-        <h3 style="font-size:1.05rem; font-weight:700; margin-bottom:0.5rem">Before / After Comparison</h3>
-        <p style="font-size:0.85rem; color:var(--text-secondary); line-height:1.6">
-          Side-by-side comparison of biased vs. fairness-corrected models with measurable metric improvements and accuracy trade-off analysis.
-        </p>
-      </div>
+  <!-- Features grid -->
+  <div class="grid g3" style="margin-top:1rem">
+    <div class="feature-card" style="--accent-gradient:linear-gradient(90deg,#7c3aed,#3b82f6);--icon-bg:rgba(124,58,237,.12);--icon-border:rgba(124,58,237,.25)">
+      <div class="feature-icon">📊</div>
+      <div class="feature-title">3 Bias Metrics</div>
+      <div class="feature-desc">Demographic Parity Difference, Equal Opportunity Difference, and Disparate Impact Ratio calculated across gender and regional groups in real-time.</div>
     </div>
-
-    <!-- Tech stack pills -->
-    <div style="text-align:center; margin-top:2.5rem; display:flex; gap:10px; flex-wrap:wrap; justify-content:center">
-      <span class="pill">Python Flask</span>
-      <span class="pill">Scikit-learn</span>
-      <span class="pill">SHAP</span>
-      <span class="pill">Chart.js</span>
-      <span class="pill">100k Records</span>
-      <span class="pill">Logistic Regression</span>
+    <div class="feature-card" style="--accent-gradient:linear-gradient(90deg,#06b6d4,#10b981);--icon-bg:rgba(6,182,212,.1);--icon-border:rgba(6,182,212,.25)">
+      <div class="feature-icon">🔬</div>
+      <div class="feature-title">SHAP Explainability</div>
+      <div class="feature-desc">LinearExplainer reveals exactly why each decision was made — both globally (feature ranking) and locally (per-applicant waterfall chart).</div>
     </div>
-  </section>
-
-  <!-- ═══════════════════════════════════════
-       DATASET OVERVIEW
-  ═══════════════════════════════════════ -->
-  <section id="section-overview" class="section">
-    <div class="section-title">📊 Dataset Overview</div>
-    <div class="section-sub">100,000 synthetic loan applications with intentionally embedded demographic bias</div>
-
-    <!-- Stat cards -->
-    <div class="grid grid-4" style="margin-bottom:1.5rem">
-      <div class="stat-card" style="--accent: linear-gradient(90deg,#8b5cf6,#3b82f6)">
-        <div class="stat-label">Total Applicants</div>
-        <div class="stat-value" id="stat-total">–</div>
-        <div class="stat-sub">synthetic records</div>
-      </div>
-      <div class="stat-card" style="--accent: linear-gradient(90deg,#10b981,#06b6d4)">
-        <div class="stat-label">Overall Approval Rate</div>
-        <div class="stat-value" id="stat-approval">–</div>
-        <div class="stat-sub">across all groups</div>
-      </div>
-      <div class="stat-card" style="--accent: linear-gradient(90deg,#f59e0b,#ef4444)">
-        <div class="stat-label">Median Income</div>
-        <div class="stat-value" id="stat-income">–</div>
-        <div class="stat-sub">annual gross</div>
-      </div>
-      <div class="stat-card" style="--accent: linear-gradient(90deg,#a78bfa,#f472b6)">
-        <div class="stat-label">Mean Age</div>
-        <div class="stat-value" id="stat-age">–</div>
-        <div class="stat-sub">of applicants</div>
-      </div>
+    <div class="feature-card" style="--accent-gradient:linear-gradient(90deg,#10b981,#a855f7);--icon-bg:rgba(16,185,129,.1);--icon-border:rgba(16,185,129,.25)">
+      <div class="feature-icon">⚖️</div>
+      <div class="feature-title">Fairness Mitigation</div>
+      <div class="feature-desc">Fairness-aware sample reweighting re-trains the model to equalize approval rates across groups with a measurable accuracy-fairness tradeoff shown.</div>
     </div>
-
-    <div class="grid grid-3">
-      <div class="chart-wrap">
-        <h3>💜 Approval Rate by Gender</h3>
-        <canvas id="chart-approval-gender"></canvas>
-      </div>
-      <div class="chart-wrap">
-        <h3>🗺 Approval Rate by Region</h3>
-        <canvas id="chart-approval-region"></canvas>
-      </div>
-      <div class="chart-wrap">
-        <h3>🎓 Approval Rate by Education</h3>
-        <canvas id="chart-approval-education"></canvas>
-      </div>
+    <div class="feature-card" style="--accent-gradient:linear-gradient(90deg,#f59e0b,#ef4444);--icon-bg:rgba(245,158,11,.1);--icon-border:rgba(245,158,11,.25)">
+      <div class="feature-icon">⚡</div>
+      <div class="feature-title">Real-Time What-If Simulator</div>
+      <div class="feature-desc">Slide income, age, education. Pick gender & region. Instantly compare biased vs fair model — bias is flagged with a live alert banner.</div>
     </div>
-  </section>
-
-  <!-- ═══════════════════════════════════════
-       BIAS METRICS
-  ═══════════════════════════════════════ -->
-  <section id="section-bias" class="section">
-    <div class="section-title">🚨 Bias Detection Metrics</div>
-    <div class="section-sub">Quantifying algorithmic unfairness using standard fairness criteria</div>
-
-    <!-- Accuracy row -->
-    <div class="grid grid-3" style="margin-bottom:1.5rem">
-      <div class="stat-card" style="--accent: linear-gradient(90deg,#ef4444,#f97316)">
-        <div class="stat-label">Biased Model Accuracy</div>
-        <div class="stat-value" id="acc-biased">–</div>
-        <div class="stat-sub">LogisticRegression (no mitigation)</div>
-      </div>
-      <div class="stat-card" style="--accent: linear-gradient(90deg,#10b981,#06b6d4)">
-        <div class="stat-label">Fair Model Accuracy</div>
-        <div class="stat-value" id="acc-fair">–</div>
-        <div class="stat-sub">Reweighted LogisticRegression</div>
-      </div>
-      <div class="stat-card" style="--accent: linear-gradient(90deg,#8b5cf6,#3b82f6)">
-        <div class="stat-label">Accuracy–Fairness Trade-off</div>
-        <div class="stat-value" style="font-size:1.2rem; padding-top:0.4rem" id="acc-tradeoff">–</div>
-        <div class="stat-sub">cost of fairness correction</div>
-      </div>
+    <div class="feature-card" style="--accent-gradient:linear-gradient(90deg,#ec4899,#7c3aed);--icon-bg:rgba(236,72,153,.1);--icon-border:rgba(236,72,153,.25)">
+      <div class="feature-icon">🗃️</div>
+      <div class="feature-title">100k Synthetic Dataset</div>
+      <div class="feature-desc">National-scale loan data with income, education, age, gender, region — bias intentionally encoded for rural and low-income cohorts.</div>
     </div>
-
-    <div class="grid grid-2" style="margin-bottom:1.5rem">
-      <!-- Gender metrics -->
-      <div class="chart-wrap">
-        <h3>👥 Gender Fairness Metrics <span class="badge badge-bad" style="margin-left:4px">Biased → Fair</span></h3>
-        <div id="row-gender-dpd" class="metric-row"></div>
-        <div id="row-gender-eod" class="metric-row"></div>
-        <div id="row-gender-dir" class="metric-row"></div>
-      </div>
-      <!-- Region metrics -->
-      <div class="chart-wrap">
-        <h3>🗺 Region Fairness Metrics <span class="badge badge-bad" style="margin-left:4px">Biased → Fair</span></h3>
-        <div id="row-region-dpd" class="metric-row"></div>
-        <div id="row-region-eod" class="metric-row"></div>
-        <div id="row-region-dir" class="metric-row"></div>
-      </div>
+    <div class="feature-card" style="--accent-gradient:linear-gradient(90deg,#3b82f6,#06b6d4);--icon-bg:rgba(59,130,246,.1);--icon-border:rgba(59,130,246,.25)">
+      <div class="feature-icon">📈</div>
+      <div class="feature-title">Before vs After</div>
+      <div class="feature-desc">Side-by-side metric comparison table + grouped bar chart proves measurable improvement after mitigation with full accuracy/fairness tradeoff analysis.</div>
     </div>
+  </div>
 
-    <!-- Approval rates grouped chart -->
-    <div class="chart-wrap">
-      <h3>📊 Approval Rates by Group — Biased vs Fair Model</h3>
-      <canvas id="chart-approval-group" style="max-height:300px"></canvas>
+  <!-- Pipeline diagram -->
+  <div style="margin-top:2.5rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius2);padding:2rem;text-align:center">
+    <div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--v3);margin-bottom:1.25rem">⬡ &nbsp;System Pipeline</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap">
+      <div style="background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.25);border-radius:12px;padding:.65rem 1.1rem;font-size:.82rem;font-weight:600">🗃️ Data&nbsp;Generation</div>
+      <div style="color:var(--text3);font-size:1.1rem">→</div>
+      <div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:12px;padding:.65rem 1.1rem;font-size:.82rem;font-weight:600;color:#fc8181">⚠️ Biased&nbsp;Model</div>
+      <div style="color:var(--text3);font-size:1.1rem">→</div>
+      <div style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);border-radius:12px;padding:.65rem 1.1rem;font-size:.82rem;font-weight:600;color:var(--a1)">📊 Bias&nbsp;Detection</div>
+      <div style="color:var(--text3);font-size:1.1rem">→</div>
+      <div style="background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.25);border-radius:12px;padding:.65rem 1.1rem;font-size:.82rem;font-weight:600;color:var(--c1)">🔬 SHAP&nbsp;XAI</div>
+      <div style="color:var(--text3);font-size:1.1rem">→</div>
+      <div style="background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);border-radius:12px;padding:.65rem 1.1rem;font-size:.82rem;font-weight:600;color:var(--g1)">✅ Fair&nbsp;Model</div>
     </div>
-  </section>
+  </div>
 
-  <!-- ═══════════════════════════════════════
-       EXPLAINABILITY (SHAP)
-  ═══════════════════════════════════════ -->
-  <section id="section-shap" class="section">
-    <div class="section-title">🔬 Explainable AI — SHAP Analysis</div>
-    <div class="section-sub">Global feature importance using SHAP LinearExplainer on both models</div>
+  <div class="tech-pills">
+    <span class="tech-pill">Python Flask</span>
+    <span class="tech-pill">Scikit-learn</span>
+    <span class="tech-pill">SHAP LinearExplainer</span>
+    <span class="tech-pill">Chart.js v4</span>
+    <span class="tech-pill">100,000 Records</span>
+    <span class="tech-pill">Logistic Regression</span>
+    <span class="tech-pill">Fairness Reweighting</span>
+  </div>
+</section>
 
-    <div class="grid grid-2">
-      <div class="chart-wrap">
-        <h3 style="color:var(--red)">🔴 Biased Model — Feature Importance</h3>
-        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem">
-          High SHAP weight on <em>Gender (Female)</em> and <em>Region (Rural)</em> reveals the model is making decisions based on protected attributes.
-        </p>
-        <canvas id="chart-shap-biased"></canvas>
+<!-- ══════════════════════════════════════════════════════
+     DATASET OVERVIEW
+══════════════════════════════════════════════════════ -->
+<section id="section-overview" class="section">
+  <div class="sec-head">
+    <div class="sec-eyebrow">📋 Data Insights</div>
+    <div class="sec-title">Dataset Overview</div>
+    <div class="sec-sub">100,000 synthetic national loan applications — with intentionally embedded demographic bias patterns</div>
+  </div>
+
+  <div class="grid g4" style="margin-bottom:1.5rem">
+    <div class="stat-card">
+      <div class="stat-glow" style="--glow:rgba(124,58,237,.25)"></div>
+      <div class="stat-icon">🗃️</div>
+      <div class="stat-label">Total Records</div>
+      <div class="stat-value" id="stat-total" style="--val-grad:linear-gradient(135deg,#fff,#c084fc)">–</div>
+      <div class="stat-sub">synthetic applicants</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-glow" style="--glow:rgba(16,185,129,.2)"></div>
+      <div class="stat-icon">✅</div>
+      <div class="stat-label">Approval Rate</div>
+      <div class="stat-value" id="stat-approval" style="--val-grad:linear-gradient(135deg,#34d399,#06b6d4)">–</div>
+      <div class="stat-sub">across all groups</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-glow" style="--glow:rgba(245,158,11,.2)"></div>
+      <div class="stat-icon">💰</div>
+      <div class="stat-label">Median Income</div>
+      <div class="stat-value" id="stat-income" style="--val-grad:linear-gradient(135deg,#fbbf24,#f97316)">–</div>
+      <div class="stat-sub">annual gross</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-glow" style="--glow:rgba(96,165,250,.2)"></div>
+      <div class="stat-icon">🎂</div>
+      <div class="stat-label">Mean Age</div>
+      <div class="stat-value" id="stat-age" style="--val-grad:linear-gradient(135deg,#93c5fd,#818cf8)">–</div>
+      <div class="stat-sub">of applicants</div>
+    </div>
+  </div>
+
+  <div class="grid g3">
+    <div class="panel">
+      <div class="panel-title">💜 Approval Rate by Gender</div>
+      <canvas id="chart-approval-gender"></canvas>
+    </div>
+    <div class="panel">
+      <div class="panel-title">🗺️ Approval Rate by Region</div>
+      <canvas id="chart-approval-region"></canvas>
+    </div>
+    <div class="panel">
+      <div class="panel-title">🎓 Approval Rate by Education</div>
+      <canvas id="chart-approval-education"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     BIAS METRICS
+══════════════════════════════════════════════════════ -->
+<section id="section-bias" class="section">
+  <div class="sec-head">
+    <div class="sec-eyebrow">🚨 Fairness Analysis</div>
+    <div class="sec-title">Bias Detection Metrics</div>
+    <div class="sec-sub">Quantifying algorithmic unfairness using industry-standard fairness criteria</div>
+  </div>
+
+  <div class="grid g3" style="margin-bottom:1.5rem">
+    <div class="stat-card glow-card">
+      <div class="stat-glow" style="--glow:rgba(239,68,68,.25)"></div>
+      <div class="stat-icon">❌</div>
+      <div class="stat-label">Biased Model Accuracy</div>
+      <div class="stat-value" id="acc-biased" style="--val-grad:linear-gradient(135deg,#fc8181,#f97316)">–</div>
+      <div class="stat-sub">LogisticRegression — no mitigation</div>
+    </div>
+    <div class="stat-card glow-card">
+      <div class="stat-glow" style="--glow:rgba(16,185,129,.25)"></div>
+      <div class="stat-icon">✅</div>
+      <div class="stat-label">Fair Model Accuracy</div>
+      <div class="stat-value" id="acc-fair" style="--val-grad:linear-gradient(135deg,#34d399,#06b6d4)">–</div>
+      <div class="stat-sub">Reweighted LogisticRegression</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-glow" style="--glow:rgba(124,58,237,.2)"></div>
+      <div class="stat-icon">📐</div>
+      <div class="stat-label">Accuracy–Fairness Tradeoff</div>
+      <div class="stat-value" id="acc-tradeoff" style="font-size:1.2rem;--val-grad:linear-gradient(135deg,#c084fc,#60a5fa)">–</div>
+      <div class="stat-sub">cost of fairness correction</div>
+    </div>
+  </div>
+
+  <div class="grid g2" style="margin-bottom:1.5rem">
+    <div class="panel">
+      <div class="panel-title">👥 Gender Fairness
+        <span class="badge badge-red" style="font-size:.65rem">Biased → Fair</span>
       </div>
-      <div class="chart-wrap">
-        <h3 style="color:var(--green)">🟢 Fair Model — Feature Importance</h3>
-        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem">
-          After reweighting, <em>Income</em>, <em>Education</em>, and <em>Age</em> dominate — protected features have reduced influence.
-        </p>
-        <canvas id="chart-shap-fair"></canvas>
+      <div id="row-gender-dpd" class="metric-row"></div>
+      <div id="row-gender-eod" class="metric-row"></div>
+      <div id="row-gender-dir" class="metric-row"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">🗺️ Region Fairness
+        <span class="badge badge-red" style="font-size:.65rem">Biased → Fair</span>
       </div>
+      <div id="row-region-dpd" class="metric-row"></div>
+      <div id="row-region-eod" class="metric-row"></div>
+      <div id="row-region-dir" class="metric-row"></div>
     </div>
+  </div>
 
-    <div class="chart-wrap" style="margin-top:1.25rem">
-      <h3>📖 How to Read SHAP Values</h3>
-      <div class="grid grid-3" style="margin-top:0.75rem">
-        <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:10px; padding:1rem">
-          <div style="font-size:1.3rem; margin-bottom:0.4rem">⬆️</div>
-          <strong style="font-size:0.85rem">Positive SHAP</strong>
-          <p style="font-size:0.78rem; color:var(--text-secondary); margin-top:0.3rem">Feature pushes prediction toward <strong>Approved</strong>. Higher value = stronger positive influence.</p>
-        </div>
-        <div style="background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.15); border-radius:10px; padding:1rem">
-          <div style="font-size:1.3rem; margin-bottom:0.4rem">⬇️</div>
-          <strong style="font-size:0.85rem">Negative SHAP</strong>
-          <p style="font-size:0.78rem; color:var(--text-secondary); margin-top:0.3rem">Feature pushes prediction toward <strong>Rejected</strong>. Larger magnitude = stronger negative pull.</p>
-        </div>
-        <div style="background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.15); border-radius:10px; padding:1rem">
-          <div style="font-size:1.3rem; margin-bottom:0.4rem">📊</div>
-          <strong style="font-size:0.85rem">Mean |SHAP|</strong>
-          <p style="font-size:0.78rem; color:var(--text-secondary); margin-top:0.3rem">Average absolute SHAP across all predictions. Higher bar = more influential feature overall.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+  <div class="panel">
+    <div class="panel-title">📊 Group Approval Rates — Biased vs Fair Model</div>
+    <canvas id="chart-approval-group" style="max-height:300px"></canvas>
+  </div>
+</section>
 
-  <!-- ═══════════════════════════════════════
-       BEFORE / AFTER COMPARISON
-  ═══════════════════════════════════════ -->
-  <section id="section-comparison" class="section">
-    <div class="section-title">📈 Before vs After Mitigation</div>
-    <div class="section-sub">Comprehensive comparison of all fairness metrics after bias correction</div>
+<!-- ══════════════════════════════════════════════════════
+     SHAP EXPLAINABILITY
+══════════════════════════════════════════════════════ -->
+<section id="section-shap" class="section">
+  <div class="sec-head">
+    <div class="sec-eyebrow">🔬 Explainable AI</div>
+    <div class="sec-title">SHAP Feature Importance</div>
+    <div class="sec-sub">Global explanations using SHAP LinearExplainer — which features drive each model's decisions?</div>
+  </div>
 
-    <div class="chart-wrap" style="margin-bottom:1.5rem">
-      <h3>📊 All Fairness Metrics — Side by Side</h3>
-      <canvas id="chart-compare-full" style="max-height:340px"></canvas>
-    </div>
-
-    <div class="chart-wrap">
-      <h3>📋 Detailed Metric Table</h3>
-      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem">
-        DPD &amp; EOD: lower is fairer &nbsp;|&nbsp; DIR: higher (closer to 1.0) is fairer &nbsp;|&nbsp; 80% rule: DIR ≥ 0.80 acceptable
+  <div class="grid g2" style="margin-bottom:1.5rem">
+    <div class="panel">
+      <div class="panel-title" style="color:#fc8181">🔴 Biased Model — Feature Ranking</div>
+      <p style="font-size:.8rem;color:var(--text2);margin-bottom:1rem;line-height:1.55">
+        Protected attributes (<em>Gender</em> and <em>Region</em>) carry high SHAP weight — the model is using them as decision signals, which is unfair.
       </p>
-      <div style="overflow-x:auto">
-        <table class="compare-table">
-          <thead>
-            <tr>
-              <th style="text-align:left">Metric</th>
-              <th>Biased Model</th>
-              <th>Fair Model</th>
-              <th>Improvement</th>
-            </tr>
-          </thead>
-          <tbody id="compare-tbody">
-            <tr><td colspan="4" style="text-align:center; color:var(--text-muted)">Initialize system to see results</td></tr>
-          </tbody>
-        </table>
+      <canvas id="chart-shap-biased"></canvas>
+    </div>
+    <div class="panel">
+      <div class="panel-title" style="color:#34d399">🟢 Fair Model — Feature Ranking</div>
+      <p style="font-size:.8rem;color:var(--text2);margin-bottom:1rem;line-height:1.55">
+        After reweighting, <em>Income</em>, <em>Education</em>, and <em>Age</em> dominate — protected attributes have substantially reduced influence.
+      </p>
+      <canvas id="chart-shap-fair"></canvas>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">📖 How to Read SHAP Values</div>
+    <div class="grid g3" style="margin-top:.75rem">
+      <div class="explainer-box">
+        <div class="explainer-icon">⬆️</div>
+        <div class="explainer-title">Positive SHAP Value</div>
+        <div class="explainer-text">This feature pushed the model toward <strong style="color:var(--g1)">Approved</strong>. A larger bar = stronger positive push for this applicant.</div>
+      </div>
+      <div class="explainer-box">
+        <div class="explainer-icon">⬇️</div>
+        <div class="explainer-title">Negative SHAP Value</div>
+        <div class="explainer-text">This feature pushed the model toward <strong style="color:var(--r1)">Rejected</strong>. A larger bar = stronger negative pull against this applicant.</div>
+      </div>
+      <div class="explainer-box">
+        <div class="explainer-icon">📏</div>
+        <div class="explainer-title">Mean |SHAP| (Global)</div>
+        <div class="explainer-text">Average of absolute SHAP values across all predictions. Taller bar = feature has more overall influence on every decision the model makes.</div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ═══════════════════════════════════════
-       WHAT-IF SIMULATOR
-  ═══════════════════════════════════════ -->
-  <section id="section-whatif" class="section">
-    <div class="section-title">🎛 What-If Simulator</div>
-    <div class="section-sub">Adjust applicant profile and watch real-time predictions — bias is highlighted instantly</div>
+<!-- ══════════════════════════════════════════════════════
+     BEFORE / AFTER
+══════════════════════════════════════════════════════ -->
+<section id="section-comparison" class="section">
+  <div class="sec-head">
+    <div class="sec-eyebrow">📈 Mitigation Results</div>
+    <div class="sec-title">Before vs After Bias Correction</div>
+    <div class="sec-sub">Proof of measurable improvement across all fairness metrics after applying fairness-aware reweighting</div>
+  </div>
 
-    <div class="whatif-grid">
-      <!-- Controls panel -->
-      <div class="chart-wrap">
-        <h3>⚙️ Applicant Profile</h3>
+  <div class="panel" style="margin-bottom:1.5rem">
+    <div class="panel-title">📊 All Metrics Side-by-Side</div>
+    <canvas id="chart-compare-full" style="max-height:340px"></canvas>
+  </div>
 
-        <div class="slider-group" style="margin-bottom:1.5rem">
-          <div class="slider-item">
-            <div class="slider-label">Annual Income <span id="wi-income-val">$50,000</span></div>
-            <input type="range" id="wi-income" min="5000" max="200000" step="1000" value="50000" />
-          </div>
-          <div class="slider-item">
-            <div class="slider-label">Age <span id="wi-age-val">35 yrs</span></div>
-            <input type="range" id="wi-age" min="18" max="74" step="1" value="35" />
-          </div>
-          <div class="slider-item">
-            <div class="slider-label">Education Level <span id="wi-education-val">Some College</span></div>
-            <input type="range" id="wi-education" min="0" max="4" step="1" value="2" />
-          </div>
+  <div class="panel">
+    <div class="panel-title">📋 Detailed Comparison Table
+      <span class="badge badge-purple" style="margin-left:4px">DPD & EOD: lower = fairer &nbsp;|&nbsp; DIR: closer to 1.0 = fairer (80% rule)</span>
+    </div>
+    <div style="overflow-x:auto;margin-top:1rem">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th style="text-align:left">Metric</th>
+            <th>Biased Model</th>
+            <th>Fair Model</th>
+            <th>Improvement</th>
+          </tr>
+        </thead>
+        <tbody id="compare-tbody">
+          <tr><td colspan="4" style="text-align:center;color:var(--text3);padding:2rem">Initialize system to see results</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     WHAT-IF SIMULATOR
+══════════════════════════════════════════════════════ -->
+<section id="section-whatif" class="section">
+  <div class="sec-head">
+    <div class="sec-eyebrow">⚡ Interactive</div>
+    <div class="sec-title">What-If Simulator</div>
+    <div class="sec-sub">Modify the applicant profile and watch real-time predictions update — bias is flagged instantly</div>
+  </div>
+
+  <div class="wi-layout">
+    <!-- Controls -->
+    <div class="controls-panel">
+      <div style="font-size:.85rem;font-weight:700;color:var(--v3);margin-bottom:1.25rem;display:flex;align-items:center;gap:8px">
+        ⚙️ Applicant Profile
+      </div>
+
+      <div class="ctrl-section">
+        <div class="ctrl-label">Annual Income <span class="ctrl-val" id="wi-income-val">$50,000</span></div>
+        <input type="range" id="wi-income" min="5000" max="200000" step="1000" value="50000" />
+      </div>
+      <div class="ctrl-section">
+        <div class="ctrl-label">Age <span class="ctrl-val" id="wi-age-val">35 yrs</span></div>
+        <input type="range" id="wi-age" min="18" max="74" step="1" value="35" />
+      </div>
+      <div class="ctrl-section">
+        <div class="ctrl-label">Education Level <span class="ctrl-val" id="wi-education-val">Some College</span></div>
+        <input type="range" id="wi-education" min="0" max="4" step="1" value="2" />
+      </div>
+
+      <div class="ctrl-section">
+        <label class="select-label" for="wi-gender">Gender</label>
+        <select id="wi-gender">
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+      </div>
+      <div class="ctrl-section">
+        <label class="select-label" for="wi-region">Region</label>
+        <select id="wi-region">
+          <option value="urban">Urban</option>
+          <option value="rural">Rural</option>
+        </select>
+      </div>
+
+      <div class="tip-box">
+        💡 <strong>Try this:</strong> Set Gender → Female, Region → Rural, and drag Income down to ~$18,000 to see a live <strong style="color:var(--a1)">Bias Detected</strong> alert.
+      </div>
+
+      <button class="btn btn-primary" id="btn-detailed" onclick="runDetailedPredict()" style="width:100%;margin-top:1.25rem;justify-content:center">
+        🔬 Explain This Decision (SHAP)
+      </button>
+    </div>
+
+    <!-- Results -->
+    <div>
+      <div class="verdict-cards" id="wi-verdict-cards">
+        <div class="verdict-card" id="wi-biased">
+          <div class="verdict-model-label">🔴 Biased Model</div>
+          <div class="verdict-text verdict-rejected" id="wi-biased-text">– – –</div>
+          <div class="verdict-prob" id="wi-biased-prob">Confidence: –</div>
+          <div class="prog-bar"><div class="prog-fill" id="wi-biased-bar" style="width:50%"></div></div>
         </div>
-
-        <div class="select-group">
-          <div class="select-item">
-            <label for="wi-gender">Gender</label>
-            <select id="wi-gender">
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-            </select>
-          </div>
-          <div class="select-item">
-            <label for="wi-region">Region</label>
-            <select id="wi-region">
-              <option value="urban">Urban</option>
-              <option value="rural">Rural</option>
-            </select>
-          </div>
-        </div>
-
-        <div style="margin-top:1.5rem; border-top:1px solid var(--border); padding-top:1.25rem">
-          <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.75rem">
-            💡 <strong>Tip:</strong> Switch Gender to Female and Region to Rural with low income to see bias detection in action.
-          </p>
-          <button class="btn btn-primary" id="btn-detailed" onclick="runDetailedPredict()" style="width:100%">
-            🔬 Explain This Decision
-          </button>
+        <div class="verdict-card" id="wi-fair">
+          <div class="verdict-model-label">🟢 Fair Model</div>
+          <div class="verdict-text verdict-approved" id="wi-fair-text">– – –</div>
+          <div class="verdict-prob" id="wi-fair-prob">Confidence: –</div>
+          <div class="prog-bar"><div class="prog-fill prog-fill-green" id="wi-fair-bar" style="width:50%"></div></div>
         </div>
       </div>
 
-      <!-- Results panel -->
-      <div>
-        <!-- Live prediction cards -->
-        <div class="prediction-cards" id="wi-prediction-cards">
-          <div class="prediction-card" id="wi-biased" style="border-color:rgba(239,68,68,0.25); background:rgba(239,68,68,0.04)">
-            <div class="prediction-label">Biased Model</div>
-            <div class="prediction-verdict">–</div>
-            <div class="prediction-prob">–</div>
-            <div class="progress-bar" style="margin-top:0.75rem"><div class="progress-fill" style="width:50%"></div></div>
-          </div>
-          <div class="prediction-card" id="wi-fair" style="border-color:rgba(16,185,129,0.25); background:rgba(16,185,129,0.04)">
-            <div class="prediction-label">Fair Model</div>
-            <div class="prediction-verdict">–</div>
-            <div class="prediction-prob">–</div>
-            <div class="progress-bar" style="margin-top:0.75rem"><div class="progress-fill" style="background:linear-gradient(90deg,#10b981,#06b6d4); width:50%"></div></div>
-          </div>
-        </div>
+      <!-- Bias alert -->
+      <div class="bias-alert hidden" id="wi-bias-flag">
+        <span class="alert-icon">⚠️</span>
+        <span id="wi-bias-text">Bias detected</span>
+      </div>
 
-        <!-- Bias flag -->
-        <div class="bias-flag-banner hidden" id="wi-bias-flag">
-          ⚠️ Bias detected
-        </div>
-
-        <!-- SHAP local explanations -->
-        <div id="shap-local-container" style="display:none; margin-top:1.5rem">
-          <div class="divider" style="margin:1rem 0"></div>
-          <h3 style="font-size:1rem; font-weight:700; margin-bottom:1rem">🔬 SHAP – Why This Decision?</h3>
-          <div class="grid grid-2">
-            <div class="chart-wrap" style="padding:1rem">
-              <div style="font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:0.5rem">BIASED MODEL</div>
-              <div class="prediction-verdict" id="shap-biased-verdict" style="font-size:1.1rem; margin-bottom:0.25rem">–</div>
-              <div class="prediction-prob" id="shap-biased-prob" style="font-size:0.78rem">–</div>
-              <div style="margin-top:0.75rem" id="shap-biased-waterfall"></div>
-            </div>
-            <div class="chart-wrap" style="padding:1rem">
-              <div style="font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:0.5rem">FAIR MODEL</div>
-              <div class="prediction-verdict" id="shap-fair-verdict" style="font-size:1.1rem; margin-bottom:0.25rem">–</div>
-              <div class="prediction-prob" id="shap-fair-prob" style="font-size:0.78rem">–</div>
-              <div style="margin-top:0.75rem" id="shap-fair-waterfall"></div>
-            </div>
+      <!-- SHAP local -->
+      <div id="shap-local-container" style="display:none;margin-top:1rem">
+        <div class="divider"></div>
+        <div style="font-size:.95rem;font-weight:700;margin-bottom:1rem">🔬 Why Was This Decision Made?</div>
+        <div class="shap-container">
+          <div class="shap-panel">
+            <div class="shap-panel-label">🔴 Biased Model</div>
+            <div class="shap-verdict verdict-rejected" id="shap-biased-verdict">–</div>
+            <div class="shap-prob" id="shap-biased-prob">–</div>
+            <div class="shap-divider"></div>
+            <div id="shap-biased-waterfall"></div>
+          </div>
+          <div class="shap-panel">
+            <div class="shap-panel-label">🟢 Fair Model</div>
+            <div class="shap-verdict verdict-approved" id="shap-fair-verdict">–</div>
+            <div class="shap-prob" id="shap-fair-prob">–</div>
+            <div class="shap-divider"></div>
+            <div id="shap-fair-waterfall"></div>
           </div>
         </div>
+      </div>
+
+      <!-- Idle state -->
+      <div id="wi-idle" style="margin-top:2rem;text-align:center;color:var(--text3);font-size:.9rem;display:none">
+        Initialize the system first to enable live predictions.
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
 </div><!-- end .container -->
 
