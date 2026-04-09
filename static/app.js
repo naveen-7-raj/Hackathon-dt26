@@ -161,8 +161,10 @@ async function loadDashboardData() {
 function markReady() {
   statusDot.classList.add('ready');
   statusTxt.textContent = 'System Ready';
-  if (initBtn) { initBtn.textContent = '✅ System Ready'; initBtn.disabled = true; }
-  gotoTab('section-overview');
+  if (initBtn) { 
+    initBtn.textContent = '✅ System Ready'; 
+    initBtn.disabled = false;
+  }
 }
 
 // ── Initialize on page load ───────────────────────────────────
